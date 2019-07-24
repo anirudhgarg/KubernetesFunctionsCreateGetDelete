@@ -10,8 +10,13 @@ namespace KubernetesFunctions
         IKubernetes client;
         public KubernetestFunctionsAPI()
         {
-            //var config = KubernetesClientConfiguration.BuildDefaultConfig();
-            FileInfo file = new FileInfo(@"C:\Users\anirudhg\Desktop\config");
+            var config = KubernetesClientConfiguration.BuildDefaultConfig();           
+            client = new Kubernetes(config);
+        }
+
+        public KubernetestFunctionsAPI(string filePath)
+        {           
+            FileInfo file = new FileInfo(filePath);
             var config = KubernetesClientConfiguration.BuildConfigFromConfigFile(file);
             client = new Kubernetes(config);
         }

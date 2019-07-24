@@ -8,14 +8,14 @@ namespace Client
     {
         static void Main(string[] args)
         {
-            var k = new KubernetestFunctionsAPI();         
-            if (k.CreateFunctionsContainer("helloworld2", out string status, "gcr.io/google-samples/node-hello:1.0"))
+            var k = new KubernetestFunctionsAPI(@"C:\Users\anirudhg\Desktop\config");         
+            if (k.CreateFunctionsContainer("helloworld4", out string status, "gcr.io/google-samples/node-hello:1.0"))
             {
                 int i = 30;
                 while (true)
                 { 
                     i--;
-                    k.GetIPAdress("helloworld2", out string IPAddress, out status);
+                    k.GetIPAdress("helloworld4", out string IPAddress, out status);
                     Thread.Sleep(5000);
                     Console.WriteLine("Getting IP Address");
                     if (IPAddress.Length > 0)
@@ -35,6 +35,7 @@ namespace Client
                 //Console.WriteLine(status4);
             }
             Console.WriteLine(status);
+            Console.ReadLine();
         }
     }
 }
