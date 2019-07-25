@@ -21,6 +21,26 @@ namespace KubernetesFunctions
             client = new Kubernetes(config);
         }
 
+        public Dictionary<string,string> GetAllActiveFunctionContainers()
+        {
+            var containerIPAdresses = new Dictionary<string, string>();
+            var services = client.ListServiceForAllNamespaces();
+            foreach (var item in services.Items)
+            {
+                if (item.Metadata.Labels.ContainsKey("functions"))
+                {
+                    string IPAddress = string.Empty;
+                    if (item.Status.LoadBalancer.Ingress != null)
+                    {
+                        IPAddress = item.Status.LoadBalancer.Ingress[0].Ip;
+                      
+                    }
+                    containerIPAdresses.Add(item.Metadata.Name, IPAddress);
+                }
+            }
+            return containerIPAdresses;
+        }
+
         public bool CreateFunctionsContainer(string containerName, out string status, string image = "mcr.microsoft.com/azure-functions/mesh:2.0.12490", int numberOfContainers=1)
         {            
             var deploymentList = client.ListDeploymentForAllNamespaces();
@@ -67,14 +87,14 @@ namespace KubernetesFunctions
 
                 var template = new k8s.Models.V1PodTemplateSpec
                 {
-                    Metadata = new k8s.Models.V1ObjectMeta { Labels = new Dictionary<string, string>() { { "run", containerName } } },
+                    Metadata = new k8s.Models.V1ObjectMeta { Labels = new Dictionary<string, string>() { { "functions", containerName } } },
                     Spec = podSpec
                 };
 
                 var spec = new k8s.Models.Appsv1beta1DeploymentSpec
                 {
                     Replicas = numberOfContainers,
-                    Selector = new k8s.Models.V1LabelSelector { MatchLabels = new Dictionary<string, string>() { { "run", containerName } } },
+                    Selector = new k8s.Models.V1LabelSelector { MatchLabels = new Dictionary<string, string>() { { "functions", containerName } } },
                     Template = template
                 };
 
@@ -104,13 +124,13 @@ namespace KubernetesFunctions
                     Spec = new k8s.Models.V1ServiceSpec
                     {
                         Type = "LoadBalancer",
-                        Selector = new Dictionary<string, string>() { { "run", containerName } },
+                        Selector = new Dictionary<string, string>() { { "functions", containerName } },
                         Ports = serviceports
                     },
                     Metadata = new k8s.Models.V1ObjectMeta
                     {
                         Name = containerName,
-                        Labels = new Dictionary<string, string>() { { "run", containerName } }
+                        Labels = new Dictionary<string, string>() { { "functions", containerName } }
                     }
                 };
 

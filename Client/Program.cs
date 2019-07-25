@@ -8,9 +8,9 @@ namespace Client
     {
         static void Main(string[] args)
         {            
-            var k = new KubernetestFunctionsAPI(@"C:\Users\anirudhg\Desktop\config");                 
+            var k = new KubernetestFunctionsAPI(@"C:\Users\anirudhg\Desktop\config");               
 
-            var containerName = "helloworldcreatemultiple2";
+            var containerName = "functionscontainer2";
             if (k.CreateFunctionsContainer(containerName, out string status, "gcr.io/google-samples/node-hello:1.0", 2))
             {
                 Console.WriteLine(string.Format("Created Functions Container {0}", containerName));
@@ -32,12 +32,18 @@ namespace Client
                     Console.WriteLine("Getting IP Address. Waiting 10 seconds");
                     Thread.Sleep(10000);
                 }
-
                 //Thread.Sleep(50000);
                 //k.DeleteContainer("helloworld", out string status4);
                 //Console.WriteLine(status4);
             }
             Console.WriteLine(status);
+
+            // Get all functions containers
+            foreach (var keyvalue in k.GetAllActiveFunctionContainers())
+            {
+                Console.WriteLine(keyvalue.Key + ":" + keyvalue.Value);
+            }
+
             Console.ReadLine();
         }
     }
