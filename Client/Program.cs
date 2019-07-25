@@ -8,10 +8,9 @@ namespace Client
     {
         static void Main(string[] args)
         {            
-            var k = new KubernetestFunctionsAPI(@"C:\Users\anirudhg\Desktop\config");               
-
-            var containerName = "functionscontainer2";
-            if (k.CreateFunctionsContainer(containerName, out string status, "gcr.io/google-samples/node-hello:1.0", 2))
+            var k = new KubernetestFunctionsAPI(@"C:\Users\anirudhg\Desktop\config");         
+            var containerName = "functionscontainer";
+            if (k.CreateFunctionsContainer(containerName, out string status))
             {
                 Console.WriteLine(string.Format("Created Functions Container {0}", containerName));
                 int i = 30;
@@ -21,24 +20,25 @@ namespace Client
                     k.GetIPAdress(containerName, out string IPAddress, out status);                    
                     if (IPAddress.Length > 0)
                     {
-                        Console.WriteLine("IP Adress {0}", IPAddress);
+                        Console.WriteLine("IP Address {0}", IPAddress);
                         break;
                     }
                     if (i <= 0)
                     {
-                        Console.WriteLine("Could not get IP");
+                        Console.WriteLine("Could not get IP Address");
                         break;
                     }
                     Console.WriteLine("Getting IP Address. Waiting 10 seconds");
                     Thread.Sleep(10000);
                 }
                 //Thread.Sleep(50000);
-                //k.DeleteContainer("helloworld", out string status4);
+                //k.DeleteContainer("helloworld1", out string status4);
                 //Console.WriteLine(status4);
             }
             Console.WriteLine(status);
 
             // Get all functions containers
+            Console.WriteLine("Getting all functions containers");
             foreach (var keyvalue in k.GetAllActiveFunctionContainers())
             {
                 Console.WriteLine(keyvalue.Key + ":" + keyvalue.Value);
