@@ -21,7 +21,7 @@ namespace KubernetesFunctions
             client = new Kubernetes(config);
         }
 
-        public bool CreateFunctionsContainer(string containerName, out string status, string image = "mcr.microsoft.com/azure-functions/python")
+        public bool CreateFunctionsContainer(string containerName, out string status, string image = "mcr.microsoft.com/azure-functions/mesh:2.0.12490", int numberOfContainers=1)
         {            
             var deploymentList = client.ListDeploymentForAllNamespaces();
             foreach (var item in deploymentList.Items)
@@ -73,6 +73,7 @@ namespace KubernetesFunctions
 
                 var spec = new k8s.Models.Appsv1beta1DeploymentSpec
                 {
+                    Replicas = numberOfContainers,
                     Selector = new k8s.Models.V1LabelSelector { MatchLabels = new Dictionary<string, string>() { { "run", containerName } } },
                     Template = template
                 };
@@ -170,6 +171,24 @@ namespace KubernetesFunctions
                     if (item.Metadata.Name == containerName)
                     {
                         client.DeleteNamespacedDeployment1(containerName, "default");
+                    }
+                }
+
+                var replicaSetList = client.ListReplicaSetForAllNamespaces();
+                foreach (var item in replicaSetList.Items)
+                {
+                    if (item.Metadata.Name.StartsWith(containerName + "-"))
+                    {
+                        client.DeleteNamespacedReplicaSet(item.Metadata.Name, "default");
+                    }
+                }
+
+                var podList = client.ListPodForAllNamespaces();
+                foreach (var item in podList.Items)
+                {
+                    if (item.Metadata.Name.StartsWith(containerName + "-"))
+                    {
+                        client.DeleteNamespacedPod(item.Metadata.Name, "default");
                     }
                 }
             }
