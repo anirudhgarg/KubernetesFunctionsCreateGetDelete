@@ -60,7 +60,7 @@ namespace KubernetesFunctions
 
                 var containerport = new k8s.Models.V1ContainerPort
                 {
-                    ContainerPort = 8080
+                    ContainerPort = 80
                 };
 
                 var containerports = new List<k8s.Models.V1ContainerPort>
@@ -111,7 +111,7 @@ namespace KubernetesFunctions
                 /*Creating Service*/
                 var serviceport = new k8s.Models.V1ServicePort
                 {
-                    Port = 8080
+                    Port = 80
                 };
 
                 var serviceports = new List<k8s.Models.V1ServicePort>

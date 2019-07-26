@@ -9,7 +9,7 @@ namespace Client
         static void Main(string[] args)
         {            
             var k = new KubernetestFunctionsAPI(@"C:\Users\anirudhg\Desktop\config");         
-            var containerName = "functionscontainer";
+            var containerName = "functionscontainer80";
             if (k.CreateFunctionsContainer(containerName, out string status))
             {
                 Console.WriteLine(string.Format("Created Functions Container {0}", containerName));
